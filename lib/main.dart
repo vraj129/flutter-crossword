@@ -39,6 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController valueController = TextEditingController();
   bool stopInsert = false;
   List<String> listString = [];
+  List<List<String>> grid = [];
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +82,27 @@ class _MyHomePageState extends State<MyHomePage> {
                         if (rowController.text.isNotEmpty && columnController.text.isNotEmpty) {
                           m = int.tryParse(rowController.text)!;
                           n = int.tryParse(columnController.text)!;
-                          if ((m <= 0 || m > 5) || (n <= 0 || n > 10)) {
+                          if ((m > 0 || m <= 5)) {
+                            if (n != m) {
+                              m = -1;
+                              n = -1;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "The matrix has to be square matrix",
+                                  ),
+                                ),
+                              );
+                            } else {
+                              grid = List.generate(m, (index) => List.filled(m, "2"));
+                              for (int i = 0; i < m; i++) {
+                                for (int j = 0; j < n; j++) {
+                                  print(grid[i][j]);
+                                }
+                              }
+                              setState(() {});
+                            }
+                          } else {
                             m = -1;
                             n = -1;
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -91,8 +112,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                               ),
                             );
-                          } else {
-                            setState(() {});
                           }
                         }
                       },
@@ -131,6 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           if (!stopInsert) {
                             if (valueController.text.isNotEmpty) {
                               if (i < m) {
+                                grid[i][j] = valueController.text;
                                 j++;
                                 if (j == n) {
                                   j = 0;
@@ -148,7 +168,12 @@ class _MyHomePageState extends State<MyHomePage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => GridViewScreen(listString: listString, m: m),
+                                builder: (context) => GridViewScreen(
+                                  listString: listString,
+                                  m: m,
+                                  grid: grid,
+                                  n: n,
+                                ),
                               ),
                             );
                           }
